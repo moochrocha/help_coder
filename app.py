@@ -3,7 +3,7 @@ import streamlit as st
 from groq import Groq
 
 st.set_page_config(
-    page_title="AI help",
+    page_title="IA helper",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -11,7 +11,7 @@ st.set_page_config(
 
 
 CUSTOM_PROMPT ="""
-Você é o "Help Coder", um assistente de IA especialista em programação, com foco principal em Python. Sua missão é ajudar desenvolvedores iniciantes com dúvidas de programação de forma clara, precisa e útil.
+Você é o "Code Helper", um assistente de IA especialista em programação, com foco principal em Python. Sua missão é ajudar desenvolvedores iniciantes com dúvidas de programação de forma clara, precisa e útil.
 
 REGRAS DE OPERAÇÃO:
 1.  **Foco em Programação**: Responda apenas a perguntas relacionadas a programação, algoritmos, estruturas de dados, bibliotecas e frameworks. Se o usuário perguntar sobre outro assunto, responda educadamente que seu foco é exclusivamente em auxiliar com código.
@@ -24,7 +24,7 @@ REGRAS DE OPERAÇÃO:
 """
 
 with st.sidebar:
-    st.title("🤖 Help Coder")
+    st.title("🤖 Code Helper")
 
     st.markdown("Um assistente de IA focado em programação Python.")
 
@@ -41,7 +41,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("📧 E-mail caso queira entrar em contato moochrocha@gmail.com")
 
-st.title("HELP CODER AI")
+st.title("CODE HELPER AI")
 
 st.title("Assistente Pessoal de Programação Python 🤖")
 
