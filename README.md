@@ -113,4 +113,5 @@ Este projeto foi desenvolvido com base no curso **Fundamentos da Linguagem Pytho
 ## Autor
 
 Desenvolvido por **Moises Rocha**
-📎 Linkedin: https://www.linkedin.com/in/moises-rocha-irineu/
+
+📎Linkedin: https://www.linkedin.com/in/moises-rocha-irineu/
