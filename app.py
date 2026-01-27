@@ -2,14 +2,104 @@ import os
 import streamlit as st
 from groq import Groq
 
+
+def dark_theme():
+    st.markdown("""
+    <style>
+    .stApp {
+            background-color: #0e1117;
+            color: #fafafa;
+            }
+            
+    [data-testid="stSidebar"] {
+                background-color: #161b22;
+                color: #fafafa;
+                }
+    [data-testid="stMarkdownContainer"],
+                label,p span{
+                color: #fafafa !important;
+                }
+
+    .stChatMessage {
+                background-color: #161b22;
+                color: #fafafa;
+                border-radius: 10px;
+                padding: 10px;
+                }
+    code {
+                background-color: #1e1e1e;
+                color: #fafafa;
+                }
+    </style>
+    """, unsafe_allow_html=True)
+
+def light_theme():
+    st.markdown("""
+    <style>
+    .stApp {
+            background-color: #ffffff;
+            color: #000000;
+            }
+    
+    header[data-testid="stHeader"] {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                border-bottom: 1px solid #e0e0e0;
+                }
+
+    div[data-testid="stBottom"] {
+                background-color: #ffffff !important;
+                border-top: 1px solid #e0e0e0;
+                }
+
+    [data-testid="stSidebar"] {
+                background-color: #f5f5f5;
+                color: #000000;
+                }
+
+    [data-testid="stMarkdownContainer"],
+                label, p, span {
+                color: #000000 !important;
+                }
+
+    .stChatMessage {
+                background-color: #f0f2f6;
+                color: #000000;
+                border-radius: 10px;
+                padding: 10px;
+                }
+
+    code {
+                background-color: #f0f2f6;
+                color: #000000;
+                }
+
+    pre {
+                background-color: #f6f8fa !important;
+                color: #000000 !important;
+                border-radius: 8px;
+                padding: 12px;
+                overflow-x: auto;
+                }
+
+    pre code {
+                background-color: transparent !important;
+                color: #000000 !important;
+                font-size: 14px;
+                }
+    </style>
+    """, unsafe_allow_html=True)
+
+
 st.set_page_config(
     page_title="IA helper",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
+    
 CUSTOM_PROMPT ="""
 Você é o "Code Helper", um assistente de IA especialista em programação, com foco principal em Python. Sua missão é ajudar desenvolvedores iniciantes com dúvidas de programação de forma clara, precisa e útil.
 
@@ -24,9 +114,25 @@ REGRAS DE OPERAÇÃO:
 """
 
 with st.sidebar:
+    
+    # tema escuro/claro
+    theme_toggle = st.toggle(
+    "🌗 Tema escuro",
+    value = st.session_state.theme == "dark"
+    )
+    
+    st.session_state.theme = "dark" if theme_toggle else "light"
+
+    if st.session_state.theme == "dark":
+        dark_theme()
+    else:
+        light_theme()
+
     st.title("🤖 Code Helper")
 
     st.markdown("Um assistente de IA focado em programação Python.")
+    
+    
 
     # Campo para inserir a chave de API groq
     groq_api_key = st.text_input(
