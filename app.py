@@ -2,94 +2,240 @@ import os
 import streamlit as st
 from groq import Groq
 
+# inicializa o tema
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
 
-def dark_theme():
-    st.markdown("""
-    <style>
-    .stApp {
-            background-color: #0e1117;
-            color: #fafafa;
-            }
-            
-    [data-testid="stSidebar"] {
-                background-color: #161b22;
-                color: #fafafa;
-                }
-    [data-testid="stMarkdownContainer"],
-                label,p span{
-                color: #fafafa !important;
-                }
+def apply_theme():
+    """Aplica o tema atual baseado na session_state"""
+    if st.session_state.theme == "dark":
+        st.markdown("""
+        <style>
+        /* Tema Escuro */
+        .stApp {
+            background-color: #0e1117 !important;
+            color: #fafafa !important;
+        }
+        
+        header[data-testid="stHeader"] {
+            background-color: #161B22 !important;
+            color: #fafafa !important;
+        }
+        
+        [data-testid="stBottom"] {
+            background-color: #161b22 !important;
+            border-top: 1px solid #333 !important;
+        }
+        
+        [data-testid="stSidebar"] {
+            background-color: #161b22 !important;
+            color: #fafafa !important;
+        }
+                    
+        .stChatInput {
+            background-color: #161b22 !important;
+            border-top: 1px solid #333 !important;
+        }
+        
+        [data-testid="stChatInputTextArea"] {
+            background-color: #262730 !important;
+            color: #fafafa !important;
+            border: 1px solid #444 !important;
+        }
+        
+        [data-testid="stChatInputTextArea"]:focus {
+            border-color: #1e88e5 !important;
+            box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2) !important;
+        }
+        
+        [data-testid="stMarkdownContainer"],
+        label, p, span, h1, h2, h3, h4, h5, h6 {
+            color: #fafafa !important;
+        }
+        
+        .stChatMessage {
+            background-color: transparent !important;
+        }
+        
+        .stButton > button {
+            background-color: #1e88e5 !important;
+            color: white !important;
+            border: none !important;
+        }
+        
+        .stButton > button:hover {
+            background-color: #1976d2 !important;
+        }
+        
+        .stTextInput > div > div > input {
+            background-color: #262730 !important;
+            color: #fafafa !important;
+            border: 1px solid #444 !important;
+        }
+        
+        .stTextInput > div > div > input:focus {
+            border-color: #1e88e5 !important;
+            box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2) !important;
+        }
+        
+        code {
+            background-color: #1e1e1e !important;
+            color: #fafafa !important;
+        }
+        
+        pre {
+            background-color: #1e1e1e !important;
+            color: #fafafa !important;
+            border: 1px solid #333 !important;
+        }
+        
+        hr {
+            border-color: #333 !important;
+        }
+        
+        /* Estilo específico para o toggle */
+        .stToggle {
+            background-color: transparent !important;
+        }
+        
+        [data-testid="stToggle"] > div {
+            background-color: #444 !important;
+        }
+        
+        [data-testid="stToggle"] > div > div {
+            background-color: #1e88e5 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <style>
+        /* Tema Claro */
+        .stApp {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        
+        header[data-testid="stHeader"] {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border-bottom: 1px solid #e0e0e0 !important;
+        }
+        
+        [data-testid="stBottom"] {
+            background-color: #ffffff !important;
+            border-top: 1px solid #e0e0e0 !important;
+        }
+        
+        [data-testid="stBottomBlockContainer"] {
+                    background-color: #FFFFFF !important;
+                    color: #FFFFFF !important;
+                    }
 
-    .stChatMessage {
-                background-color: #161b22;
-                color: #fafafa;
-                border-radius: 10px;
-                padding: 10px;
-                }
-    code {
-                background-color: #1e1e1e;
-                color: #fafafa;
-                }
-    </style>
-    """, unsafe_allow_html=True)
+        [class="st-emotion-cache-jchovf e5ztmp71"] {
+                    background-color: #FFFFFF !important;
+                    color: #FFFFFF !important;}
 
-def light_theme():
-    st.markdown("""
-    <style>
-    .stApp {
-            background-color: #ffffff;
-            color: #000000;
-            }
-    
-    header[data-testid="stHeader"] {
-                background-color: #ffffff !important;
-                color: #000000 !important;
-                border-bottom: 1px solid #e0e0e0;
-                }
+        [data-testid="stSidebar"] {
+            background-color: #f8f9fa !important;
+            color: #000000 !important;
+            border-right: 1px solid #e0e0e0 !important;
+        }
+        
+        .stChatInput {
+            background-color: #ffffff !important;
+            border-top: 1px solid #e0e0e0 !important;
+        }
+        
+        [data-testid="stChatInputTextArea"] {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #ddd !important;
+        }
+        
+        [data-testid="stChatInputTextArea"]:focus {
+            border-color: #1e88e5 !important;
+            box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2) !important;
+        }
+        
+        [data-testid="stMarkdownContainer"],
+        label, p, span, h1, h2, h3, h4, h5, h6 {
+            color: #000000 !important;
+        }
+        
+        .stChatMessage {
+            background-color: transparent !important;
+        }
+        
+        .stButton > button {
+            background-color: #1e88e5 !important;
+            color: white !important;
+            border: none !important;
+        }
+        
+        .stButton > button:hover {
+            background-color: #1976d2 !important;
+        }
+        
+        .stTextInput > div > div > input {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #ddd !important;
+        }
+        
+        .stTextInput > div > div > input:focus {
+            border-color: #1e88e5 !important;
+            box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2) !important;
+        }
+        
+        code {
+            background-color: #f5f5f5 !important;
+            color: #000000 !important;
+        }
+        
+        pre {
+            background-color: #f5f5f5 !important;
+            color: #000000 !important;
+            border: 1px solid #ddd !important;
+        }
+        
+        hr {
+            border-color: #e0e0e0 !important;
+        }
+        
+        /* Estilo específico para o toggle */
+        .stToggle {
+            background-color: transparent !important;
+        }
+        
+        [data-testid="stToggle"] > div {
+            background-color: #ddd !important;
+        }
+        
+        [data-testid="stToggle"] > div > div {
+            background-color: #1e88e5 !important;
+        }
+                    
+        [data-testid="stChatInputTextArea"]:: placeholder {
+                    color: #6c757d !important;
+                    opacity: 1px solid !important;
+                    }
 
-    div[data-testid="stBottom"] {
-                background-color: #ffffff !important;
-                border-top: 1px solid #e0e0e0;
-                }
+        /* Placeholder do chat input (texto "Qual sua dúvida sobre Python?") */
+        [data-testid="stChatInputTextArea"]::placeholder {
+                    color: #495057 !important; /* cinza escuro, ótima leitura */
+                    opacity: 1 !important;
+                    }
+        </style>
+        """, unsafe_allow_html=True)
 
-    [data-testid="stSidebar"] {
-                background-color: #f5f5f5;
-                color: #000000;
-                }
-
-    [data-testid="stMarkdownContainer"],
-                label, p, span {
-                color: #000000 !important;
-                }
-
-    .stChatMessage {
-                background-color: #f0f2f6;
-                color: #000000;
-                border-radius: 10px;
-                padding: 10px;
-                }
-
-    code {
-                background-color: #f0f2f6;
-                color: #000000;
-                }
-
-    pre {
-                background-color: #f6f8fa !important;
-                color: #000000 !important;
-                border-radius: 8px;
-                padding: 12px;
-                overflow-x: auto;
-                }
-
-    pre code {
-                background-color: transparent !important;
-                color: #000000 !important;
-                font-size: 14px;
-                }
-    </style>
-    """, unsafe_allow_html=True)
-
+def toggle_theme():
+    # Função para alternar o tema
+    if st.session_state.theme == "dark":
+        st.session_state.theme = "light"
+    else:
+        st.session_state.theme = "dark"
+    st.rerun()
 
 st.set_page_config(
     page_title="IA helper",
@@ -97,8 +243,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-if "theme" not in st.session_state:
-    st.session_state.theme = "dark"
+
+apply_theme()
     
 CUSTOM_PROMPT ="""
 Você é o "Code Helper", um assistente de IA especialista em programação, com foco principal em Python. Sua missão é ajudar desenvolvedores iniciantes com dúvidas de programação de forma clara, precisa e útil.
@@ -114,20 +260,16 @@ REGRAS DE OPERAÇÃO:
 """
 
 with st.sidebar:
-    
     # tema escuro/claro
-    theme_toggle = st.toggle(
-    "🌗 Tema escuro",
-    value = st.session_state.theme == "dark"
-    )
-    
-    st.session_state.theme = "dark" if theme_toggle else "light"
+    st.markdown("### 🎨  Configuração de tema")
 
-    if st.session_state.theme == "dark":
-        dark_theme()
-    else:
-        light_theme()
+    # Toggle com callback
+    current_theme = st.session_state.theme
+    theme_label = "🌙 Tema escuro" if current_theme == "light" else "☀️ Tema claro"
 
+    if st.button(theme_label, use_container_width=True, key="theme_toggle"): toggle_theme()
+
+    st.markdown("---")
     st.title("🤖 Code Helper")
 
     st.markdown("Um assistente de IA focado em programação Python.")
@@ -145,7 +287,17 @@ with st.sidebar:
     st.markdown("Desenvolvido para auxiliar em suas dúvidas de programação com Linguagem Python. IA pode cometer erros!")
 
     st.markdown("---")
+    st.markdown("### 🗑️ Conversa")
+    if st.button("Limpar Conversa",use_container_width=True):
+        if st.session_state.messages:
+            st.session_state.messages = []
+            st.success("Conversa limpa com sucesso!")
+            st.rerun()
+    
+    st.markdown("---")
     st.markdown("📧 E-mail caso queira entrar em contato moochrocha@gmail.com")
+
+    
 
 st.title("CODE HELPER AI")
 
