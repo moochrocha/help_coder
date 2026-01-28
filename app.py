@@ -133,8 +133,12 @@ def apply_theme():
                     }
 
         [class="st-emotion-cache-jchovf e5ztmp71"] {
-                    background-color: #FFFFFF !important;
+                    background-color: #F4F4F4 !important;
                     color: #FFFFFF !important;}
+
+        [data-testid="stChatInputSubmitButton"] {
+                    background-color: #6c757d !important;
+                    color: #ffffff !important;}
 
         [data-testid="stSidebar"] {
             background-color: #f8f9fa !important;
@@ -148,7 +152,7 @@ def apply_theme():
         }
         
         [data-testid="stChatInputTextArea"] {
-            background-color: #ffffff !important;
+            background-color: #f4f4f4 !important;
             color: #000000 !important;
             border: 1px solid #ddd !important;
         }
@@ -215,7 +219,12 @@ def apply_theme():
         [data-testid="stToggle"] > div > div {
             background-color: #1e88e5 !important;
         }
-                    
+        
+        [data-testid="stChatInput"] {
+                    color: #6c757d !important;
+                    opacity: 1px solid !important;
+                    }
+
         [data-testid="stChatInputTextArea"]:: placeholder {
                     color: #6c757d !important;
                     opacity: 1px solid !important;
@@ -260,6 +269,11 @@ REGRAS DE OPERAÇÃO:
 """
 
 with st.sidebar:
+    st.title("🤖 Code Helper")
+
+    st.markdown("Um assistente de IA focado em programação Python.")
+    st.markdown("---")
+
     # tema escuro/claro
     st.markdown("### 🎨  Configuração de tema")
 
@@ -268,14 +282,8 @@ with st.sidebar:
     theme_label = "🌙 Tema escuro" if current_theme == "light" else "☀️ Tema claro"
 
     if st.button(theme_label, use_container_width=True, key="theme_toggle"): toggle_theme()
-
     st.markdown("---")
-    st.title("🤖 Code Helper")
-
-    st.markdown("Um assistente de IA focado em programação Python.")
     
-    
-
     # Campo para inserir a chave de API groq
     groq_api_key = st.text_input(
         "Insira sua API Key Groq",
