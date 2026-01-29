@@ -268,6 +268,56 @@ REGRAS DE OPERAÇÃO:
 3.  **Clareza e Precisão**: Use uma linguagem clara. Evite jargões desnecessários. Suas respostas devem ser tecnicamente precisas.
 """
 
+PROMPT_ESTUDO = """
+Você é o Code Helper, um assistente especialista em Python para ESTUDO.
+
+REGRAS DE OPERAÇÃO:
+- Explique o conceito com clareza
+- Use linguagem didática
+- Mostre exemplos de código bem comentados
+- Explique cada parte do código
+- Inclua uma seção final chamada:
+    📚 Documentação de Referência
+    com links oficiais (docs.python.org ou da biblioteca usada)
+
+Seja PACIENTE, CLARO e EDUCATIVO.
+"""
+
+PROMPT_RAPIDO = """
+Você é o Code Helper, um assistente especialista em Python para RESPOSTAS RÁPIDAS.
+
+REGRAS DE OPERAÇÃO:
+- Seja DIRETO e OBJETIVO
+- Prioriza o CÓDIGO
+- Explique apenas se for NECESSÁRIO
+- Não escreva textos longos
+- Use exemplos simples e funcionais
+
+Foque em PRODUTIVIDADE.
+"""
+
+PROMPT_PSEUDOCODIGO = """
+Você é o Code Helper em MODO PSEUDOCÓDIGO.
+
+OBJETIVO:
+Ajudar o usuário a PENSAR na solução, não copiar código.
+
+REGRAS OBRIGATÓRIAS:
+- NÃO escreva código em Python, JavaScript ou qualquer linguagem de programação
+- Use apenas PSEUDOCÓDIGO estruturado
+- Use palavras como:
+    INÍCIO, FIM, SE, SENÃO, ENQUANTO, PARA, FUNÇÃO
+- Não use sintaxe de linguagem de programação real
+- Não use imports, bibliotecas ou APIs reais
+
+FORMATO DA RESPOSTA:
+1. Explicação breve da LÓGICA
+2. Pseudocódigo completo e organizado
+3. Dicas para o usuário transformar isso em código real
+
+IMPORTANTE:
+Se o usuário pedir CÓDIGO diretamente, explique que neste modo você só gera PSEUDOCÓDIGO.
+"""
 with st.sidebar:
     st.title("🤖 Code Helper")
 
@@ -283,13 +333,27 @@ with st.sidebar:
 
     if st.button(theme_label, use_container_width=True, key="theme_toggle"): toggle_theme()
     st.markdown("---")
-    
+
     # Campo para inserir a chave de API groq
     groq_api_key = st.text_input(
         "Insira sua API Key Groq",
         type="password",
         help="Obtenha sua chave em https://console.groq.com/keys"
     )
+
+    st.markdown("---")
+    st.markdown("## ⚙️ Modo de Resposta")
+    modo_resposta = st.radio(
+        "Escolha como deseja receber as respostas:",
+        options=[
+            "📖 Estudo", 
+            "⚡ Rápido",
+            "🧠 Pseudocódigo"
+            ],
+        index=0
+    )
+
+    st.session_state.modo_resposta = modo_resposta
 
     st.markdown("---")
     st.markdown("Desenvolvido para auxiliar em suas dúvidas de programação com Linguagem Python. IA pode cometer erros!")
@@ -312,6 +376,8 @@ st.title("CODE HELPER AI")
 st.title("Assistente Pessoal de Programação Python 🤖")
 
 st.caption("Faça sua pergunta sobre Linguagem Python e obtenha código, explicações e referências.")
+
+st.caption(f"Modo ativo: {st.session_state.modo_resposta}")
 
 # Inicializa o histórico de mensagens na sessão, caso ainda não exista
 if "messages" not in st.session_state:
@@ -358,7 +424,14 @@ if prompt := st.chat_input("Qual sua dúvida sobre Python?"):
         st.markdown(prompt)
 
     # Prepara mensagem para enviar à API, incluindo prompt de sistema
-    messages_for_api = [{"role": "system", "content":CUSTOM_PROMPT}]
+    if st.session_state.modo_resposta == "📖 Estudo":
+        system_prompt = PROMPT_ESTUDO
+    elif st.session_state.modo_resposta == "⚡ Rápido":
+        system_prompt = PROMPT_RAPIDO
+    else:
+        system_prompt = PROMPT_PSEUDOCODIGO
+
+    messages_for_api = [{"role": "system", "content":system_prompt}]
     for msg in st.session_state.messages:
 
         messages_for_api.append(msg)
