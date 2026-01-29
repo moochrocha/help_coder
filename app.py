@@ -355,6 +355,18 @@ with st.sidebar:
 
     st.session_state.modo_resposta = modo_resposta
 
+    
+    temperature = st.slider(
+        "## 🌡️ Nível de detalhamento da resposta",
+        min_value=0.0,
+        max_value=1.0,
+        value=0.4,
+        step=0.01,
+        help="Quanto maior, mais explicativa e criativa será a resposta"
+    )
+
+    st.session_state.temperature = temperature
+
     st.markdown("---")
     st.markdown("Desenvolvido para auxiliar em suas dúvidas de programação com Linguagem Python. IA pode cometer erros!")
 
@@ -445,7 +457,7 @@ if prompt := st.chat_input("Qual sua dúvida sobre Python?"):
                 chat_completion = client.chat.completions.create(
                     messages = messages_for_api,
                     model = "openai/gpt-oss-120b",
-                    temperature= 0.7,
+                    temperature= st.session_state.temperature,
                     max_tokens = 2048
                 )
 
