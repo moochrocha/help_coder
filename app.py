@@ -1,6 +1,21 @@
 import os
 import streamlit as st
+import json
 from groq import Groq
+
+# Historico do chat
+HISTORY_FILE = "chat_history.json"
+
+def save_history(messages):
+    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(messages, f, ensure_ascii=False, indent=2)
+
+def load_history():
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+        
+    return []
 
 # inicializa o tema
 if "theme" not in st.session_state:
@@ -373,8 +388,8 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### 🗑️ Conversa")
     if st.button("Limpar Conversa",use_container_width=True):
-        if st.session_state.messages:
             st.session_state.messages = []
+            save_history([])
             st.success("Conversa limpa com sucesso!")
             st.rerun()
     
@@ -393,7 +408,7 @@ st.caption(f"Modo ativo: {st.session_state.modo_resposta}")
 
 # Inicializa o histórico de mensagens na sessão, caso ainda não exista
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = load_history()
 
 # Exibe todas as mensagens anteriores armazenadas no estado da sessão
 for message in st.session_state.messages:
@@ -429,7 +444,10 @@ if prompt := st.chat_input("Qual sua dúvida sobre Python?"):
         st.stop()
 
     # Armazena a mensagem do usuário no estado da sessão
-    st.session_state.messages.append({"role":"user", "content":prompt})
+    st.session_state.messages.append({
+        "role":"user", "content":prompt
+        })
+    save_history(st.session_state.messages)
 
     # Exibe a mensagem do usuário no chat
     with st.chat_message("user"):
@@ -447,6 +465,7 @@ if prompt := st.chat_input("Qual sua dúvida sobre Python?"):
     for msg in st.session_state.messages:
 
         messages_for_api.append(msg)
+        
 
     with st.chat_message("assistant"):
         with st.spinner("Analisando sua pergunta..."):
@@ -468,7 +487,10 @@ if prompt := st.chat_input("Qual sua dúvida sobre Python?"):
                 st.markdown(help_coder_response)
 
                 # Armazena resposta do assistente no estado da sessão
-                st.session_state.messages.append({"role": "assistant", "content":help_coder_response})
+                st.session_state.messages.append({
+                    "role": "assistant", "content":help_coder_response
+                    })
+                save_history(st.session_state.messages)
 
             except Exception as e:
                 st.error(f"Ocorreu um erro ao se comunicar com a API da Groq: {e}")
