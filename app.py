@@ -4,38 +4,48 @@ import json
 from groq import Groq
 import uuid
 
-# Historico do chat
-if "user_id" not in st.session_state:
-    st.session_state.user_id = str(uuid.uuid4())
-
 HISTORY_DIR = "chat_histories"
 os.makedirs(HISTORY_DIR, exist_ok=True)
 
-def get_history_file():
-    return os.path.join(HISTORY_DIR, f"{st.session_state.user_id}.json")
+def init_session():
+    # Historico do chat
+    if "user_id" not in st.session_state:
+        st.session_state.user_id = str(uuid.uuid4())
 
-def save_history(messages):
-    with open(get_history_file(), "w", encoding="utf-8") as f:
+    # Inicializa o histórico de mensagens na sessão, caso ainda não exista
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # inicializa o tema
+    if "theme" not in st.session_state:
+        st.session_state.theme = "dark"
+
+def get_history_file(user_id):
+    return os.path.join(HISTORY_DIR, f"{user_id}.json")
+
+def save_history(messages, user_id):
+    with open(get_history_file(user_id), "w", encoding="utf-8") as f:
         json.dump(messages, f, ensure_ascii=False, indent=2)
 
-def load_history():
-    file = get_history_file()
+def load_history(user_id):
+    file = get_history_file(user_id)
     if os.path.exists(file):
         with open(file, "r", encoding="utf-8") as f:
             return json.load(f)
         
     return []
 
+init_session()
+
+if not st.session_state.messages:
+    st.session_state.messages = load_history(st.session_state.user_id)
+# Exportar chat
 def export_to_markdown(messages):
     md = "# 📑 Histórico da Conversa \n\n"
     for msg in messages:
         role = "🧑 Usuário" if msg["role"] == "user" else "🤖 Assistente"
         md += f"## {role}\n\n{msg['content']}\n\n---\n\n"
     return md
-
-# inicializa o tema
-if "theme" not in st.session_state:
-    st.session_state.theme = "dark"
 
 def apply_theme():
     """Aplica o tema atual baseado na session_state"""
@@ -416,7 +426,7 @@ with st.sidebar:
     st.markdown("---")
     st.download_button(
         label="📎 Exportar conversa (Markdown)",
-        data=export_to_markdown(st.session_state.messages),
+        data=export_to_markdown(st.session_state.get("messages", [])),
         file_name="conversa_code_helper.md",
         mime="text/markdown",
         use_container_width=True
@@ -431,10 +441,6 @@ st.title("Assistente Pessoal de Programação Python 🤖")
 st.caption("Faça sua pergunta sobre Linguagem Python e obtenha código, explicações e referências.")
 
 st.caption(f"Modo ativo: {st.session_state.modo_resposta}")
-
-# Inicializa o histórico de mensagens na sessão, caso ainda não exista
-if "messages" not in st.session_state:
-    st.session_state.messages = load_history()
 
 # Exibe todas as mensagens anteriores armazenadas no estado da sessão
 for message in st.session_state.messages:
@@ -473,7 +479,7 @@ if prompt := st.chat_input("Qual sua dúvida sobre Python?"):
     st.session_state.messages.append({
         "role":"user", "content":prompt
         })
-    save_history(st.session_state.messages)
+    save_history(st.session_state.messages, st.session_state.user_id)
 
     # Exibe a mensagem do usuário no chat
     with st.chat_message("user"):
@@ -516,7 +522,7 @@ if prompt := st.chat_input("Qual sua dúvida sobre Python?"):
                 st.session_state.messages.append({
                     "role": "assistant", "content":help_coder_response
                     })
-                save_history(st.session_state.messages)
+                save_history(st.session_state.messages, st.session_state.user_id)
 
             except Exception as e:
                 st.error(f"Ocorreu um erro ao se comunicar com a API da Groq: {e}")
