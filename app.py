@@ -2,20 +2,36 @@ import os
 import streamlit as st
 import json
 from groq import Groq
+import uuid
 
 # Historico do chat
-HISTORY_FILE = "chat_history.json"
+if "user_id" not in st.session_state:
+    st.session_state.user_id = str(uuid.uuid4())
+
+HISTORY_DIR = "chat_histories"
+os.makedirs(HISTORY_DIR, exist_ok=True)
+
+def get_history_file():
+    return os.path.join(HISTORY_DIR, f"{st.session_state.user_id}.json")
 
 def save_history(messages):
-    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+    with open(get_history_file(), "w", encoding="utf-8") as f:
         json.dump(messages, f, ensure_ascii=False, indent=2)
 
 def load_history():
-    if os.path.exists(HISTORY_FILE):
-        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+    file = get_history_file()
+    if os.path.exists(file):
+        with open(file, "r", encoding="utf-8") as f:
             return json.load(f)
         
     return []
+
+def export_to_markdown(messages):
+    md = "# 📑 Histórico da Conversa \n\n"
+    for msg in messages:
+        role = "🧑 Usuário" if msg["role"] == "user" else "🤖 Assistente"
+        md += f"## {role}\n\n{msg['content']}\n\n---\n\n"
+    return md
 
 # inicializa o tema
 if "theme" not in st.session_state:
@@ -333,6 +349,7 @@ FORMATO DA RESPOSTA:
 IMPORTANTE:
 Se o usuário pedir CÓDIGO diretamente, explique que neste modo você só gera PSEUDOCÓDIGO.
 """
+
 with st.sidebar:
     st.title("🤖 Code Helper")
 
@@ -395,6 +412,15 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("📧 E-mail caso queira entrar em contato moochrocha@gmail.com")
+
+    st.markdown("---")
+    st.download_button(
+        label="📎 Exportar conversa (Markdown)",
+        data=export_to_markdown(st.session_state.messages),
+        file_name="conversa_code_helper.md",
+        mime="text/markdown",
+        use_container_width=True
+    )
 
     
 
