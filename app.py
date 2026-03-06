@@ -364,6 +364,8 @@ with st.sidebar:
     st.title("🤖 Code Helper")
 
     st.markdown("Um assistente de IA focado em programação Python.")
+    
+    st.markdown("Desenvolvido para auxiliar em suas dúvidas de programação com Linguagem Python. IA pode cometer erros!")
     st.markdown("---")
 
     # tema escuro/claro
@@ -410,13 +412,10 @@ with st.sidebar:
     st.session_state.temperature = temperature
 
     st.markdown("---")
-    st.markdown("Desenvolvido para auxiliar em suas dúvidas de programação com Linguagem Python. IA pode cometer erros!")
-
-    st.markdown("---")
     st.markdown("### 🗑️ Conversa")
     if st.button("Limpar Conversa",use_container_width=True):
             st.session_state.messages = []
-            save_history([])
+            save_history(st.session_state.messages, st.session_state.user_id)
             st.success("Conversa limpa com sucesso!")
             st.rerun()
     
